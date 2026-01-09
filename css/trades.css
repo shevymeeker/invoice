@@ -1,0 +1,1279 @@
+/**
+ * TRADES & FIELD SERVICES INDUSTRIAL THEME
+ * =========================================
+ * Heavy-Duty Utilitarian Design System
+ * Built for job sites, not boardrooms.
+ *
+ * Typography: DIN Industrial / Heavy Sans
+ * Color: Safety & Raw Material Palette
+ * Motion: Ratchet & Click (100ms indexed)
+ * Layout: Modular Grid / Toolbox Compartments
+ */
+
+/* ============================================
+   INDUSTRIAL DESIGN TOKENS
+   ============================================ */
+
+:root {
+  /* ─────────────────────────────────────────
+     SAFETY & RAW MATERIAL PALETTE
+     High-visibility accents on raw backgrounds
+     ───────────────────────────────────────── */
+
+  /* Safety Accents - High Visibility */
+  --safety-orange: #FF6B00;
+  --safety-orange-bright: #FF8C00;
+  --safety-yellow: #FFB800;
+  --safety-yellow-bright: #FFD100;
+  --safety-green: #00A651;
+  --safety-green-dark: #008C45;
+  --safety-red: #D9001B;
+  --caution-stripe: repeating-linear-gradient(
+    -45deg,
+    var(--safety-yellow) 0,
+    var(--safety-yellow) 10px,
+    #1A1A1A 10px,
+    #1A1A1A 20px
+  );
+
+  /* Raw Material Backgrounds */
+  --concrete-light: #E8E6E3;
+  --concrete: #B8B5B0;
+  --concrete-dark: #8A8680;
+  --weathered-slate: #4A5055;
+  --dark-timber: #2E2820;
+  --carbon-black: #1A1A1A;
+  --bare-steel: #6B7075;
+  --rust-accent: #A0522D;
+
+  /* Blueprint Palette */
+  --blueprint-bg: #1E3A5F;
+  --blueprint-grid: #2A4D7A;
+  --blueprint-line: #4A7DAA;
+  --blueprint-text: #E8F4FF;
+
+  /* Functional Colors */
+  --status-active: var(--safety-green);
+  --status-warning: var(--safety-yellow);
+  --status-critical: var(--safety-red);
+  --status-info: var(--blueprint-line);
+
+  /* Typography Scale - System fonts for offline-first PWA */
+  --font-industrial: 'Arial Narrow', 'Franklin Gothic Medium Cond', 'Helvetica Neue Condensed', system-ui, -apple-system, sans-serif;
+  --font-mono: 'SF Mono', 'Consolas', 'Menlo', 'Liberation Mono', monospace;
+  --font-stencil: 'Stencil Std', 'Army', var(--font-industrial);
+
+  /* Border Thickness - Heavy Duty */
+  --border-thin: 2px;
+  --border-medium: 3px;
+  --border-thick: 4px;
+  --border-heavy: 6px;
+
+  /* Mechanical Transitions */
+  --snap-fast: 80ms;
+  --snap-normal: 100ms;
+  --snap-slow: 150ms;
+  --ease-mechanical: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Shadows - Industrial Inset */
+  --inset-sm: inset 2px 2px 0 rgba(0,0,0,0.3), inset -1px -1px 0 rgba(255,255,255,0.1);
+  --inset-md: inset 3px 3px 0 rgba(0,0,0,0.4), inset -2px -2px 0 rgba(255,255,255,0.08);
+  --inset-lg: inset 4px 4px 0 rgba(0,0,0,0.5), inset -2px -2px 0 rgba(255,255,255,0.05);
+  --emboss: 2px 2px 0 rgba(0,0,0,0.3), -1px -1px 0 rgba(255,255,255,0.1);
+
+  /* Grid Specifications */
+  --grid-unit: 20px;
+  --grid-line-color: rgba(255,255,255,0.08);
+
+  /* Touch Targets - Glove-Friendly */
+  --touch-min: 52px;
+  --touch-comfortable: 60px;
+}
+
+/* ============================================
+   TRADES THEME ACTIVATION
+   Apply .trades-theme to body or container
+   ============================================ */
+
+.trades-theme {
+  --primary-color: var(--safety-orange);
+  --primary-dark: #CC5500;
+  --primary-light: #FF9040;
+  --accent-color: var(--safety-green);
+  --accent-dark: var(--safety-green-dark);
+  --text-primary: #1A1A1A;
+  --text-secondary: var(--weathered-slate);
+  --background: var(--concrete-light);
+  --surface: #FFFFFF;
+  --divider-color: var(--concrete);
+  --error-color: var(--safety-red);
+  --warning-color: var(--safety-yellow);
+
+  font-family: var(--font-industrial);
+  background-color: var(--background);
+  color: var(--text-primary);
+
+  /* Technical Grid Background */
+  background-image:
+    linear-gradient(var(--grid-line-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line-color) 1px, transparent 1px);
+  background-size: var(--grid-unit) var(--grid-unit);
+  background-attachment: fixed;
+}
+
+/* Dark Mode Variant */
+.trades-theme.trades-dark {
+  --text-primary: #E8E6E3;
+  --text-secondary: var(--concrete);
+  --background: var(--carbon-black);
+  --surface: #252525;
+  --divider-color: var(--weathered-slate);
+  --grid-line-color: rgba(255,255,255,0.04);
+}
+
+/* ============================================
+   INDUSTRIAL TYPOGRAPHY
+   Stamped, engraved, zero-fluff
+   ============================================ */
+
+.trades-theme h1,
+.trades-theme h2,
+.trades-theme h3,
+.trades-theme h4,
+.trades-theme h5,
+.trades-theme h6,
+.trades-theme .heading {
+  font-family: var(--font-industrial);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.trades-theme h1 {
+  font-size: 2.5rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 1rem;
+}
+
+.trades-theme h2 {
+  font-size: 1.75rem;
+  letter-spacing: 0.03em;
+}
+
+.trades-theme h3 {
+  font-size: 1.25rem;
+}
+
+/* Stencil Effect for Headers */
+.trades-theme .stencil-text {
+  font-family: var(--font-industrial);
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  -webkit-text-stroke: 1px currentColor;
+  paint-order: stroke fill;
+}
+
+/* Stamped/Embossed Text */
+.trades-theme .stamped {
+  text-shadow:
+    1px 1px 0 rgba(0,0,0,0.3),
+    -1px -1px 0 rgba(255,255,255,0.1);
+}
+
+/* Label Text - Technical */
+.trades-theme .label-technical {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   MECHANICAL TRANSITIONS
+   Ratchet & Click - Indexed, Snappy
+   ============================================ */
+
+.trades-theme * {
+  transition-timing-function: var(--ease-mechanical);
+}
+
+.trades-theme button,
+.trades-theme .btn,
+.trades-theme input,
+.trades-theme select,
+.trades-theme .card,
+.trades-theme .panel {
+  transition:
+    transform var(--snap-fast) var(--ease-mechanical),
+    box-shadow var(--snap-fast) var(--ease-mechanical),
+    border-color var(--snap-fast) var(--ease-mechanical),
+    background-color var(--snap-fast) var(--ease-mechanical);
+}
+
+/* Click State - Mechanical Depression */
+.trades-theme button:active,
+.trades-theme .btn:active {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: var(--inset-sm);
+}
+
+/* Toggle/Switch Indexed Movement */
+.trades-theme .toggle-indexed {
+  transition: transform var(--snap-normal) var(--ease-mechanical);
+}
+
+.trades-theme .toggle-indexed.active {
+  transform: translateX(100%);
+}
+
+/* ============================================
+   BLUEPRINT LOAD ANIMATION
+   Reveal like plotter drawing
+   ============================================ */
+
+@keyframes blueprintReveal {
+  0% {
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    opacity: 0.5;
+  }
+  100% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    opacity: 1;
+  }
+}
+
+@keyframes blueprintDrawLine {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes indexedSlideIn {
+  0% {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes ratchetIn {
+  0% {
+    transform: translateY(-10px) scale(0.95);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(2px) scale(1.01);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.trades-theme .blueprint-reveal {
+  animation: blueprintReveal 0.4s var(--ease-mechanical) forwards;
+}
+
+.trades-theme .indexed-reveal {
+  animation: indexedSlideIn 0.15s var(--ease-mechanical) forwards;
+}
+
+.trades-theme .ratchet-in {
+  animation: ratchetIn 0.2s var(--ease-mechanical) forwards;
+}
+
+/* Stagger children for sequential reveal */
+.trades-theme .stagger-reveal > * {
+  opacity: 0;
+  animation: indexedSlideIn 0.15s var(--ease-mechanical) forwards;
+}
+
+.trades-theme .stagger-reveal > *:nth-child(1) { animation-delay: 0ms; }
+.trades-theme .stagger-reveal > *:nth-child(2) { animation-delay: 50ms; }
+.trades-theme .stagger-reveal > *:nth-child(3) { animation-delay: 100ms; }
+.trades-theme .stagger-reveal > *:nth-child(4) { animation-delay: 150ms; }
+.trades-theme .stagger-reveal > *:nth-child(5) { animation-delay: 200ms; }
+.trades-theme .stagger-reveal > *:nth-child(6) { animation-delay: 250ms; }
+
+/* ============================================
+   BLUEPRINT & SCHEMATIC BACKGROUNDS
+   Technical drawing aesthetics
+   ============================================ */
+
+.trades-theme .blueprint-bg {
+  background-color: var(--blueprint-bg);
+  background-image:
+    linear-gradient(var(--blueprint-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--blueprint-grid) 1px, transparent 1px),
+    linear-gradient(var(--blueprint-line) 2px, transparent 2px),
+    linear-gradient(90deg, var(--blueprint-line) 2px, transparent 2px);
+  background-size:
+    var(--grid-unit) var(--grid-unit),
+    var(--grid-unit) var(--grid-unit),
+    calc(var(--grid-unit) * 5) calc(var(--grid-unit) * 5),
+    calc(var(--grid-unit) * 5) calc(var(--grid-unit) * 5);
+  color: var(--blueprint-text);
+}
+
+/* Graph Paper Background */
+.trades-theme .graph-paper {
+  background-color: #FAFAFA;
+  background-image:
+    linear-gradient(rgba(0,120,180,0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,120,180,0.1) 1px, transparent 1px),
+    linear-gradient(rgba(0,120,180,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,120,180,0.05) 1px, transparent 1px);
+  background-size:
+    100px 100px,
+    100px 100px,
+    20px 20px,
+    20px 20px;
+}
+
+/* Noise Texture - Job Site Grit */
+.trades-theme .grit-texture {
+  position: relative;
+}
+
+.trades-theme .grit-texture::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+}
+
+/* Worn Metal Texture */
+.trades-theme .worn-metal {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%),
+    linear-gradient(to bottom, var(--bare-steel), #5A5F63);
+}
+
+/* ============================================
+   MODULAR GRID LAYOUT
+   Toolbox Compartments
+   ============================================ */
+
+.trades-theme .toolbox-grid {
+  display: grid;
+  gap: 4px;
+  background: var(--carbon-black);
+  padding: 4px;
+  border: var(--border-thick) solid var(--carbon-black);
+}
+
+.trades-theme .toolbox-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.trades-theme .toolbox-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.trades-theme .toolbox-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Compartment - Individual Toolbox Slot */
+.trades-theme .compartment {
+  background: var(--surface);
+  padding: 1.25rem;
+  border: var(--border-medium) solid var(--concrete-dark);
+  box-shadow: var(--inset-sm);
+  position: relative;
+}
+
+.trades-theme .compartment::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--concrete-dark);
+}
+
+/* ============================================
+   INDUSTRIAL CARDS & PANELS
+   Heavy borders, inset shadows
+   ============================================ */
+
+.trades-theme .card,
+.trades-theme .panel {
+  background: var(--surface);
+  border: var(--border-medium) solid var(--concrete-dark);
+  border-radius: 0; /* No rounded corners - industrial */
+  box-shadow: var(--inset-sm);
+  position: relative;
+}
+
+/* Riveted Corner Markers */
+.trades-theme .card-riveted::before,
+.trades-theme .card-riveted::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--bare-steel);
+  border: 2px solid var(--concrete-dark);
+  border-radius: 50%;
+}
+
+.trades-theme .card-riveted::before {
+  top: 8px;
+  left: 8px;
+}
+
+.trades-theme .card-riveted::after {
+  top: 8px;
+  right: 8px;
+}
+
+/* Panel with Technical Header */
+.trades-theme .panel-technical {
+  border-top: var(--border-heavy) solid var(--safety-orange);
+}
+
+.trades-theme .panel-technical .panel-header {
+  background: linear-gradient(to bottom, var(--carbon-black) 0%, #2A2A2A 100%);
+  color: #FFFFFF;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-industrial);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: var(--border-thin) solid var(--safety-orange);
+}
+
+.trades-theme .panel-technical .panel-header .status-indicator {
+  width: 10px;
+  height: 10px;
+  background: var(--status-active);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--status-active);
+}
+
+/* Warning Panel */
+.trades-theme .panel-warning {
+  border: var(--border-medium) solid var(--safety-yellow);
+  background: linear-gradient(135deg, rgba(255,184,0,0.1) 0%, transparent 100%);
+}
+
+.trades-theme .panel-warning::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--caution-stripe);
+}
+
+/* ============================================
+   INDUSTRIAL BUTTONS
+   Heavy, mechanical, thumb-friendly
+   ============================================ */
+
+.trades-theme .btn {
+  font-family: var(--font-industrial);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: var(--border-medium) solid;
+  border-radius: 0;
+  padding: 0.875rem 1.5rem;
+  min-height: var(--touch-min);
+  position: relative;
+  cursor: pointer;
+  box-shadow: var(--emboss);
+}
+
+.trades-theme .btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(0,0,0,0.2);
+}
+
+.trades-theme .btn:active::after {
+  height: 0;
+}
+
+/* Primary Button - Safety Orange */
+.trades-theme .btn-primary {
+  background: linear-gradient(to bottom, var(--safety-orange-bright) 0%, var(--safety-orange) 100%);
+  border-color: #CC5500;
+  color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.trades-theme .btn-primary:hover:not(:disabled) {
+  background: linear-gradient(to bottom, #FF9933 0%, var(--safety-orange-bright) 100%);
+}
+
+/* Success Button - Safety Green */
+.trades-theme .btn-success {
+  background: linear-gradient(to bottom, #00B85C 0%, var(--safety-green) 100%);
+  border-color: var(--safety-green-dark);
+  color: #FFFFFF;
+}
+
+/* Danger Button - Safety Red */
+.trades-theme .btn-danger {
+  background: linear-gradient(to bottom, #E62020 0%, var(--safety-red) 100%);
+  border-color: #A00015;
+  color: #FFFFFF;
+}
+
+/* Secondary Button - Concrete */
+.trades-theme .btn-secondary {
+  background: linear-gradient(to bottom, var(--concrete) 0%, var(--concrete-dark) 100%);
+  border-color: var(--weathered-slate);
+  color: var(--carbon-black);
+}
+
+/* Outline Button - Technical */
+.trades-theme .btn-outline {
+  background: transparent;
+  border-color: var(--safety-orange);
+  color: var(--safety-orange);
+}
+
+.trades-theme .btn-outline:hover:not(:disabled) {
+  background: var(--safety-orange);
+  color: #FFFFFF;
+}
+
+/* Large Button - Glove-Friendly */
+.trades-theme .btn-lg {
+  padding: 1.25rem 2rem;
+  min-height: var(--touch-comfortable);
+  font-size: 1.125rem;
+}
+
+/* Icon Button */
+.trades-theme .btn-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.trades-theme .btn-icon svg,
+.trades-theme .btn-icon .icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* ============================================
+   INDUSTRIAL FORM CONTROLS
+   Heavy-duty inputs for field use
+   ============================================ */
+
+.trades-theme input[type="text"],
+.trades-theme input[type="email"],
+.trades-theme input[type="tel"],
+.trades-theme input[type="url"],
+.trades-theme input[type="number"],
+.trades-theme textarea,
+.trades-theme select {
+  font-family: var(--font-industrial);
+  font-size: 1rem;
+  background: #FFFFFF;
+  border: var(--border-medium) solid var(--concrete-dark);
+  border-radius: 0;
+  padding: 0.875rem 1rem;
+  min-height: var(--touch-min);
+  box-shadow: var(--inset-sm);
+  color: var(--carbon-black);
+}
+
+.trades-theme input:focus,
+.trades-theme textarea:focus,
+.trades-theme select:focus {
+  outline: none;
+  border-color: var(--safety-orange);
+  box-shadow:
+    var(--inset-sm),
+    0 0 0 3px rgba(255, 107, 0, 0.2);
+}
+
+/* Label - Technical Style */
+.trades-theme label {
+  font-family: var(--font-industrial);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.trades-theme label.required::after {
+  content: ' *';
+  color: var(--safety-red);
+  font-weight: 900;
+}
+
+/* Fieldset - Compartmentalized */
+.trades-theme fieldset {
+  border: var(--border-medium) solid var(--concrete-dark);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background: var(--surface);
+}
+
+.trades-theme legend {
+  font-family: var(--font-industrial);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--carbon-black);
+  color: #FFFFFF;
+  padding: 0.5rem 1rem;
+  margin-left: -0.5rem;
+}
+
+/* Checkbox & Radio - Industrial */
+.trades-theme input[type="checkbox"],
+.trades-theme input[type="radio"] {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: var(--border-medium) solid var(--concrete-dark);
+  background: #FFFFFF;
+  cursor: pointer;
+  position: relative;
+  vertical-align: middle;
+}
+
+.trades-theme input[type="radio"] {
+  border-radius: 50%;
+}
+
+.trades-theme input[type="checkbox"]:checked,
+.trades-theme input[type="radio"]:checked {
+  background: var(--safety-orange);
+  border-color: #CC5500;
+}
+
+.trades-theme input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 12px;
+  border: solid #FFFFFF;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.trades-theme input[type="radio"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ============================================
+   INDUSTRIAL HEADER
+   Technical, functional
+   ============================================ */
+
+.trades-theme header {
+  background: linear-gradient(to bottom, var(--carbon-black) 0%, #1F1F1F 100%);
+  border-bottom: var(--border-thick) solid var(--safety-orange);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.trades-theme header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+}
+
+.trades-theme header h1 {
+  color: #FFFFFF;
+  font-size: 1.375rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.trades-theme header h1 .logo-mark {
+  width: 32px;
+  height: 32px;
+  background: var(--safety-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+}
+
+.trades-theme header nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.trades-theme header nav a,
+.trades-theme header nav button {
+  font-family: var(--font-industrial);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.875rem;
+  color: var(--concrete-light);
+  padding: 0.625rem 1rem;
+  border: var(--border-thin) solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--snap-fast) var(--ease-mechanical);
+}
+
+.trades-theme header nav a:hover,
+.trades-theme header nav button:hover {
+  color: #FFFFFF;
+  background: rgba(255, 107, 0, 0.1);
+  border-color: var(--safety-orange);
+}
+
+/* ============================================
+   STATUS INDICATORS
+   Clear, visible, no ambiguity
+   ============================================ */
+
+.trades-theme .status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-industrial);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  border: var(--border-thin) solid;
+}
+
+.trades-theme .status-badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.trades-theme .status-active {
+  background: rgba(0, 166, 81, 0.1);
+  border-color: var(--safety-green);
+  color: var(--safety-green-dark);
+}
+
+.trades-theme .status-active::before {
+  background: var(--safety-green);
+  box-shadow: 0 0 6px var(--safety-green);
+}
+
+.trades-theme .status-pending {
+  background: rgba(255, 184, 0, 0.1);
+  border-color: var(--safety-yellow);
+  color: #B38600;
+}
+
+.trades-theme .status-pending::before {
+  background: var(--safety-yellow);
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+.trades-theme .status-critical {
+  background: rgba(217, 0, 27, 0.1);
+  border-color: var(--safety-red);
+  color: var(--safety-red);
+}
+
+.trades-theme .status-critical::before {
+  background: var(--safety-red);
+  animation: pulse-glow-red 0.8s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--safety-yellow); }
+  50% { opacity: 0.5; box-shadow: 0 0 8px var(--safety-yellow); }
+}
+
+@keyframes pulse-glow-red {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--safety-red); }
+  50% { opacity: 0.6; box-shadow: 0 0 10px var(--safety-red); }
+}
+
+/* ============================================
+   TEMPLATE CARDS - INDUSTRIAL
+   ============================================ */
+
+.trades-theme .template-card {
+  background: var(--surface);
+  border: var(--border-medium) solid var(--concrete-dark);
+  border-radius: 0;
+  padding: 0;
+  overflow: hidden;
+  transition: all var(--snap-fast) var(--ease-mechanical);
+}
+
+.trades-theme .template-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--safety-orange);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.trades-theme .template-card__header {
+  background: linear-gradient(to bottom, var(--carbon-black) 0%, #252525 100%);
+  padding: 1rem 1.25rem;
+  border-bottom: var(--border-medium) solid var(--safety-orange);
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.trades-theme .template-card__icon {
+  width: 48px;
+  height: 48px;
+  background: var(--safety-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  border: 2px solid #CC5500;
+}
+
+.trades-theme .template-card__title {
+  color: #FFFFFF;
+  font-family: var(--font-industrial);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: 1rem;
+}
+
+.trades-theme .template-card__body {
+  padding: 1.25rem;
+}
+
+.trades-theme .template-card__description {
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.trades-theme .template-card__category {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--safety-orange);
+  background: rgba(255, 107, 0, 0.1);
+  padding: 0.25rem 0.5rem;
+  border: 1px solid rgba(255, 107, 0, 0.3);
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+.trades-theme .template-card__actions {
+  padding: 1rem 1.25rem;
+  background: var(--concrete-light);
+  border-top: 1px solid var(--concrete);
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ============================================
+   FORM SECTIONS - INDUSTRIAL
+   ============================================ */
+
+.trades-theme .response-section {
+  background: var(--surface);
+  border: var(--border-medium) solid var(--concrete-dark);
+  border-radius: 0;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.trades-theme .response-section-title {
+  background: linear-gradient(to bottom, var(--carbon-black) 0%, #2A2A2A 100%);
+  color: #FFFFFF;
+  font-family: var(--font-industrial);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 1rem 1.25rem;
+  margin: 0;
+  border-bottom: var(--border-medium) solid var(--safety-orange);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+}
+
+.trades-theme .response-section-title::before {
+  content: '';
+  width: 4px;
+  height: 24px;
+  background: var(--safety-orange);
+}
+
+.trades-theme .response-section-description {
+  background: rgba(255, 184, 0, 0.08);
+  border-left: var(--border-thick) solid var(--safety-yellow);
+  padding: 0.875rem 1.25rem;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin: 0;
+  font-style: normal;
+}
+
+.trades-theme .response-section .form-group {
+  padding: 1.25rem;
+}
+
+/* ============================================
+   DASHBOARD CARDS - INDUSTRIAL
+   ============================================ */
+
+.trades-theme .dashboard-card {
+  background: var(--surface);
+  border: var(--border-medium) solid var(--concrete-dark);
+  border-radius: 0;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all var(--snap-fast) var(--ease-mechanical);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.trades-theme .dashboard-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--safety-orange);
+  transform: scaleX(0);
+  transition: transform var(--snap-normal) var(--ease-mechanical);
+}
+
+.trades-theme .dashboard-card:hover {
+  border-color: var(--safety-orange);
+  transform: translateY(-2px);
+}
+
+.trades-theme .dashboard-card:hover::before {
+  transform: scaleX(1);
+}
+
+.trades-theme .dashboard-card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.trades-theme .dashboard-card-title {
+  font-family: var(--font-industrial);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--carbon-black);
+  margin-bottom: 0.5rem;
+}
+
+.trades-theme .dashboard-card-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   ALERTS - INDUSTRIAL SIGNAGE
+   ============================================ */
+
+.trades-theme .alert {
+  border-radius: 0;
+  border-left-width: var(--border-thick);
+  font-family: var(--font-industrial);
+  padding: 1rem 1.25rem;
+}
+
+.trades-theme .alert-warning {
+  background: linear-gradient(90deg, rgba(255,184,0,0.15) 0%, rgba(255,184,0,0.05) 100%);
+  border-color: var(--safety-yellow);
+  color: #805C00;
+}
+
+.trades-theme .alert-success {
+  background: linear-gradient(90deg, rgba(0,166,81,0.15) 0%, rgba(0,166,81,0.05) 100%);
+  border-color: var(--safety-green);
+  color: var(--safety-green-dark);
+}
+
+.trades-theme .alert-error {
+  background: linear-gradient(90deg, rgba(217,0,27,0.15) 0%, rgba(217,0,27,0.05) 100%);
+  border-color: var(--safety-red);
+  color: #8B0011;
+}
+
+.trades-theme .alert-info {
+  background: linear-gradient(90deg, rgba(74,125,170,0.15) 0%, rgba(74,125,170,0.05) 100%);
+  border-color: var(--blueprint-line);
+  color: var(--blueprint-bg);
+}
+
+/* ============================================
+   SIGNATURE PAD - INDUSTRIAL
+   ============================================ */
+
+.trades-theme .signature-pad-container {
+  border: var(--border-medium) solid var(--concrete-dark);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.trades-theme .signature-pad {
+  background: #FFFFFF;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+  background-size: 100% 20px;
+}
+
+.trades-theme .signature-pad-footer {
+  background: var(--concrete-light);
+  border-top: var(--border-thin) solid var(--concrete);
+  padding: 0.75rem;
+}
+
+/* ============================================
+   TRADES HERO SECTION
+   ============================================ */
+
+.trades-theme .trades-hero {
+  background: linear-gradient(135deg, var(--carbon-black) 0%, #2A2824 100%);
+  border-bottom: var(--border-heavy) solid var(--safety-orange);
+  padding: 3rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.trades-theme .trades-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.trades-theme .trades-hero h1 {
+  color: #FFFFFF;
+  font-size: 2.25rem;
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+
+.trades-theme .trades-hero p {
+  color: var(--concrete);
+  font-size: 1.125rem;
+  max-width: 600px;
+}
+
+.trades-theme .trades-hero .btn {
+  margin-top: 1.5rem;
+}
+
+/* ============================================
+   SERVICE BADGE
+   ============================================ */
+
+.trades-theme .service-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--carbon-black);
+  color: #FFFFFF;
+  padding: 0.625rem 1rem;
+  font-family: var(--font-industrial);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.8125rem;
+  border-left: var(--border-thick) solid var(--safety-orange);
+}
+
+.trades-theme .service-badge-icon {
+  font-size: 1.25rem;
+}
+
+/* ============================================
+   WORK ORDER STYLES
+   ============================================ */
+
+.trades-theme .work-order-header {
+  background: var(--blueprint-bg);
+  color: var(--blueprint-text);
+  padding: 1.5rem;
+  border-bottom: var(--border-medium) solid var(--blueprint-line);
+}
+
+.trades-theme .work-order-id {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  letter-spacing: 0.1em;
+  color: var(--blueprint-line);
+}
+
+.trades-theme .work-order-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--concrete-dark);
+}
+
+.trades-theme .work-order-field {
+  background: var(--surface);
+  padding: 1rem;
+}
+
+.trades-theme .work-order-field label {
+  font-size: 0.6875rem;
+  margin-bottom: 0.375rem;
+}
+
+/* ============================================
+   RESPONSIVE - MOBILE FIRST
+   ============================================ */
+
+@media (max-width: 768px) {
+  .trades-theme .toolbox-grid-3,
+  .trades-theme .toolbox-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .trades-theme .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .trades-theme header nav {
+    flex-wrap: wrap;
+  }
+
+  .trades-theme .trades-hero {
+    padding: 2rem 1rem;
+  }
+
+  .trades-theme .trades-hero h1 {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .trades-theme .toolbox-grid-2,
+  .trades-theme .toolbox-grid-3,
+  .trades-theme .toolbox-grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .trades-theme .template-card__actions {
+    flex-direction: column;
+  }
+}
+
+/* ============================================
+   PRINT STYLES - FIELD REPORTS
+   ============================================ */
+
+@media print {
+  .trades-theme {
+    background: white !important;
+    background-image: none !important;
+  }
+
+  .trades-theme .btn,
+  .trades-theme header nav,
+  .trades-theme .privacy-badge {
+    display: none !important;
+  }
+
+  .trades-theme .card,
+  .trades-theme .panel,
+  .trades-theme .response-section {
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+    page-break-inside: avoid;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY - HIGH CONTRAST MODE
+   For cracked screens in direct sunlight
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .trades-theme {
+    --safety-orange: #FF5500;
+    --safety-yellow: #FFD000;
+    --safety-green: #00CC00;
+    --concrete-dark: #000000;
+    --text-primary: #000000;
+    --border-medium: 4px;
+  }
+
+  .trades-theme .btn {
+    border-width: 4px;
+  }
+
+  .trades-theme input,
+  .trades-theme textarea,
+  .trades-theme select {
+    border-width: 4px;
+  }
+}
+
+/* Forced Colors (Windows High Contrast) */
+@media (forced-colors: active) {
+  .trades-theme .btn {
+    border: 3px solid ButtonText;
+  }
+
+  .trades-theme .status-badge::before {
+    forced-color-adjust: none;
+  }
+}
