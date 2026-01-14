@@ -182,6 +182,9 @@ class App {
     window.Router.register('/analytics', () => this.renderAnalytics());
     window.Router.register('/documents', () => this.renderDocumentGenerator());
     window.Router.register('/trades', () => this.renderTrades());
+    window.Router.register('/invoices', () => this.renderInvoicesList());
+    window.Router.register('/create-invoice', (params) => this.renderCreateInvoice(params));
+    window.Router.register('/edit-invoice', (params) => this.renderEditInvoice(params));
   }
 
   /**
@@ -981,6 +984,12 @@ class App {
               <div class="dashboard-card-icon">&#9874;</div>
               <h3 class="dashboard-card-title">Trades & Field</h3>
               <p class="dashboard-card-description">Industrial forms for job sites</p>
+            </div>
+
+            <div class="dashboard-card" onclick="window.Router.navigate('/invoices')">
+              <div class="dashboard-card-icon">💼</div>
+              <h3 class="dashboard-card-title">Invoices</h3>
+              <p class="dashboard-card-description">Create branded invoices and receipts</p>
             </div>
           </div>
 
@@ -3805,6 +3814,529 @@ class App {
         </div>
       </main>
     `;
+  }
+
+  /**
+   * Render invoices list
+   */
+  async renderInvoicesList() {
+    const invoices = await window.DB.getAllResponses();
+    const invoiceList = invoices.filter(r => r.isInvoice) || [];
+
+    const app = document.getElementById('app');
+    app.innerHTML = `
+      <header>
+        <div class="container">
+          <h1>💼 Invoices</h1>
+          <nav>
+            ${this.renderBackButton('/dashboard', 'Back')}
+            <button class="btn-primary" onclick="window.Router.navigate('/create-invoice')">+ Create Invoice</button>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <div class="container">
+          ${invoiceList.length === 0 ? `
+            <div class="card" style="text-align: center; padding: 3rem;">
+              <h2>No Invoices Yet</h2>
+              <p class="text-muted">Create your first invoice to get started</p>
+              <button class="btn btn-primary" onclick="window.Router.navigate('/create-invoice')">
+                Create Invoice
+              </button>
+            </div>
+          ` : `
+            <div class="responses-grid">
+              ${invoiceList.map(invoice => `
+                <div class="card response-card">
+                  <div class="card-header">
+                    <h3>${invoice.data['invoice-company-name'] || invoice.data['receipt-company-name'] || invoice.data['proposal-company-name'] || 'Invoice'}</h3>
+                    <small class="text-muted">${new Date(invoice.savedAt).toLocaleDateString()}</small>
+                  </div>
+                  <div class="card-body">
+                    <p><strong>Type:</strong> ${invoice.invoiceType.toUpperCase()}</p>
+                    <p><strong>Bill To:</strong> ${invoice.data['invoice-bill-name'] || invoice.data['receipt-customer-name'] || invoice.data['proposal-client-name'] || 'N/A'}</p>
+                    ${invoice.data.items ? `<p><strong>Items:</strong> ${invoice.data.items.length}</p>` : ''}
+                  </div>
+                  <div class="card-footer" style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-sm btn-primary" onclick="app.editInvoice('${invoice.id}')">Edit</button>
+                    <button class="btn btn-sm btn-outline" onclick="app.generateInvoicePdf('${invoice.id}')">PDF</button>
+                    <button class="btn btn-sm btn-danger" onclick="app.deleteInvoice('${invoice.id}')">Delete</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
+      </main>
+    `;
+  }
+
+  /**
+   * Render create invoice template chooser
+   */
+  async renderCreateInvoice(params = {}) {
+    const invoiceType = params.type;
+
+    if (!invoiceType) {
+      // Show invoice type chooser
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <header>
+          <div class="container">
+            <h1>Create Invoice</h1>
+            <nav>
+              ${this.renderBackButton('/invoices', 'Back')}
+            </nav>
+          </div>
+        </header>
+
+        <main>
+          <div class="container">
+            <h2>Select Invoice Type</h2>
+            <p class="text-muted">Choose the type of document you want to create</p>
+
+            <div class="dashboard-grid">
+              ${INVOICE_TEMPLATES.map(template => `
+                <div class="dashboard-card" onclick="window.Router.navigate('/create-invoice?type=${template.id}')">
+                  <div class="dashboard-card-icon">${template.icon}</div>
+                  <h3 class="dashboard-card-title">${template.name}</h3>
+                  <p class="dashboard-card-description">${template.description}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </main>
+      `;
+    } else {
+      // Create new invoice and load editor
+      const template = INVOICE_TEMPLATES.find(t => t.id === invoiceType);
+      if (!template) {
+        alert('Template not found');
+        window.Router.navigate('/invoices');
+        return;
+      }
+
+      if (!window.invoiceManager) {
+        window.invoiceManager = new window.InvoiceManager();
+      }
+
+      const invoice = await window.invoiceManager.createInvoice(invoiceType);
+      this.renderInvoiceEditor(invoice);
+    }
+  }
+
+  /**
+   * Render invoice editor
+   */
+  async renderInvoiceEditor(invoice) {
+    const template = INVOICE_TEMPLATES.find(t => t.id === invoice.templateId);
+    const app = document.getElementById('app');
+
+    app.innerHTML = `
+      <header>
+        <div class="container">
+          <h1>${template.name}</h1>
+          <nav>
+            ${this.renderBackButton('/invoices', 'Back')}
+            <button class="btn-success" onclick="app.saveInvoiceData()">Save</button>
+            <button class="btn-primary" onclick="app.generateInvoiceAndDownload()">Download PDF</button>
+          </nav>
+        </div>
+      </header>
+
+      <main>
+        <div class="container container-sm">
+          <div id="invoiceFormContainer"></div>
+        </div>
+      </main>
+    `;
+
+    this.renderInvoiceForm(invoice, template);
+  }
+
+  /**
+   * Render invoice form fields
+   */
+  renderInvoiceForm(invoice, template) {
+    const container = document.getElementById('invoiceFormContainer');
+
+    let html = '';
+
+    template.sections.forEach((section, sectionIdx) => {
+      if (section.isHeader) {
+        html += `
+          <div class="card">
+            <div class="card-header">
+              <h3>${section.title}</h3>
+            </div>
+            <div class="card-body">
+              ${section.fields.map(field => this.renderInvoiceField(field, invoice.data)).join('')}
+            </div>
+          </div>
+        `;
+      } else if (section.isLineItems) {
+        html += `
+          <div class="card">
+            <div class="card-header">
+              <h3>${section.title}</h3>
+            </div>
+            <div class="card-body">
+              <div id="lineItemsContainer"></div>
+              <button class="btn btn-outline btn-block" onclick="app.addLineItem()">+ Add Line Item</button>
+            </div>
+          </div>
+        `;
+      } else if (section.isTotals) {
+        html += `
+          <div class="card">
+            <div class="card-header">
+              <h3>${section.title}</h3>
+            </div>
+            <div class="card-body">
+              <div id="totalsContainer"></div>
+            </div>
+          </div>
+        `;
+      } else {
+        html += `
+          <div class="card">
+            <div class="card-header">
+              <h3>${section.title}</h3>
+              ${section.description ? `<p class="text-muted">${section.description}</p>` : ''}
+            </div>
+            <div class="card-body">
+              ${section.fields.map(field => this.renderInvoiceField(field, invoice.data)).join('')}
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    container.innerHTML = html;
+
+    // Render line items and totals
+    this.renderLineItems(invoice);
+    this.renderTotals(invoice);
+  }
+
+  /**
+   * Render invoice field
+   */
+  renderInvoiceField(field, data) {
+    const value = data[field.id] || '';
+
+    switch (field.type) {
+      case 'text':
+        return `
+          <div class="form-group">
+            <label for="${field.id}" ${field.required ? 'class="required"' : ''}>${field.label}</label>
+            <input type="text" id="${field.id}" value="${value}"
+              onchange="window.invoiceManager.currentInvoice.data['${field.id}'] = this.value"
+              placeholder="${field.placeholder || ''}"
+              ${field.required ? 'required' : ''}>
+          </div>
+        `;
+      case 'textarea':
+        return `
+          <div class="form-group">
+            <label for="${field.id}" ${field.required ? 'class="required"' : ''}>${field.label}</label>
+            <textarea id="${field.id}"
+              onchange="window.invoiceManager.currentInvoice.data['${field.id}'] = this.value"
+              placeholder="${field.placeholder || ''}"
+              rows="${field.rows || 3}"
+              ${field.required ? 'required' : ''}>${value}</textarea>
+          </div>
+        `;
+      case 'email':
+        return `
+          <div class="form-group">
+            <label for="${field.id}" ${field.required ? 'class="required"' : ''}>${field.label}</label>
+            <input type="email" id="${field.id}" value="${value}"
+              onchange="window.invoiceManager.currentInvoice.data['${field.id}'] = this.value"
+              placeholder="${field.placeholder || ''}"
+              ${field.required ? 'required' : ''}>
+          </div>
+        `;
+      case 'tel':
+        return `
+          <div class="form-group">
+            <label for="${field.id}" ${field.required ? 'class="required"' : ''}>${field.label}</label>
+            <input type="tel" id="${field.id}" value="${value}"
+              onchange="window.invoiceManager.currentInvoice.data['${field.id}'] = this.value"
+              placeholder="${field.placeholder || ''}"
+              ${field.required ? 'required' : ''}>
+          </div>
+        `;
+      case 'date':
+        return `
+          <div class="form-group">
+            <label for="${field.id}" ${field.required ? 'class="required"' : ''}>${field.label}</label>
+            <input type="date" id="${field.id}" value="${value}"
+              onchange="window.invoiceManager.currentInvoice.data['${field.id}'] = this.value"
+              ${field.required ? 'required' : ''}>
+          </div>
+        `;
+      case 'currency':
+        return `
+          <div class="form-group">
+            <label for="${field.id}" ${field.required ? 'class="required"' : ''}>${field.label}</label>
+            <input type="number" id="${field.id}" value="${value}" step="0.01"
+              onchange="window.invoiceManager.currentInvoice.data['${field.id}'] = this.value"
+              placeholder="0.00"
+              ${field.required ? 'required' : ''}>
+          </div>
+        `;
+      case 'number':
+        return `
+          <div class="form-group">
+            <label for="${field.id}" ${field.required ? 'class="required"' : ''}>${field.label}</label>
+            <input type="number" id="${field.id}" value="${value}"
+              onchange="window.invoiceManager.currentInvoice.data['${field.id}'] = this.value"
+              placeholder="${field.placeholder || '0'}"
+              ${field.required ? 'required' : ''}>
+          </div>
+        `;
+      case 'radio':
+        return `
+          <div class="form-group">
+            <label>${field.label}${field.required ? '<span style="color: red;"> *</span>' : ''}</label>
+            <div style="margin-top: 0.5rem;">
+              ${field.options.map(option => `
+                <label style="display: flex; margin-bottom: 0.5rem; align-items: center;">
+                  <input type="radio" name="${field.id}" value="${option}"
+                    ${value === option ? 'checked' : ''}
+                    onchange="window.invoiceManager.currentInvoice.data['${field.id}'] = this.value">
+                  <span style="margin-left: 0.5rem;">${option}</span>
+                </label>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      default:
+        return '';
+    }
+  }
+
+  /**
+   * Render line items table
+   */
+  renderLineItems(invoice) {
+    const container = document.getElementById('lineItemsContainer');
+    if (!container) return;
+
+    const items = invoice.data.items || [];
+
+    container.innerHTML = `
+      <table class="table" style="width: 100%; margin-bottom: 1rem;">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th style="width: 80px;">Qty</th>
+            <th style="width: 100px;">Price</th>
+            <th style="width: 100px;">Total</th>
+            <th style="width: 50px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${items.map((item, idx) => `
+            <tr>
+              <td><input type="text" value="${item.description}" style="width: 100%;" onchange="app.updateLineItem(${idx}, this.value, app.getQty(${idx}), app.getPrice(${idx}))"></td>
+              <td><input type="number" value="${item.quantity}" min="0" step="0.01" style="width: 70px;" onchange="app.updateLineItem(${idx}, app.getDesc(${idx}), this.value, app.getPrice(${idx}))"></td>
+              <td><input type="number" value="${item.price}" min="0" step="0.01" style="width: 90px;" onchange="app.updateLineItem(${idx}, app.getDesc(${idx}), app.getQty(${idx}), this.value)"></td>
+              <td style="text-align: right;">$${(item.quantity * item.price).toFixed(2)}</td>
+              <td><button class="btn btn-sm btn-danger" onclick="app.removeLineItem(${idx})">Remove</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  /**
+   * Render totals
+   */
+  renderTotals(invoice) {
+    const container = document.getElementById('totalsContainer');
+    if (!container) return;
+
+    const totals = window.invoiceManager.calculateTotals();
+
+    container.innerHTML = `
+      <div style="text-align: right;">
+        <p><strong>Subtotal:</strong> $${totals.subtotal}</p>
+        <p><strong>Tax:</strong> $${totals.tax}</p>
+        <p style="font-size: 1.25rem; margin-top: 0.5rem;"><strong>Total: $${totals.total}</strong></p>
+      </div>
+    `;
+  }
+
+  /**
+   * Edit existing invoice
+   */
+  async editInvoice(invoiceId) {
+    try {
+      if (!window.invoiceManager) {
+        window.invoiceManager = new window.InvoiceManager();
+      }
+      await window.invoiceManager.loadInvoice(invoiceId);
+      const template = INVOICE_TEMPLATES.find(t => t.id === window.invoiceManager.currentInvoice.templateId);
+      this.renderInvoiceEditor(window.invoiceManager.currentInvoice);
+    } catch (error) {
+      alert('Error loading invoice: ' + error.message);
+    }
+  }
+
+  /**
+   * Add line item
+   */
+  addLineItem() {
+    window.invoiceManager.addLineItem('', 1, 0);
+    this.renderLineItems(window.invoiceManager.currentInvoice);
+    this.renderTotals(window.invoiceManager.currentInvoice);
+  }
+
+  /**
+   * Update line item
+   */
+  updateLineItem(index, description, quantity, price) {
+    const items = window.invoiceManager.currentInvoice.data.items || [];
+    if (items[index]) {
+      items[index].description = description;
+      items[index].quantity = parseFloat(quantity) || 1;
+      items[index].price = parseFloat(price) || 0;
+      items[index].total = items[index].quantity * items[index].price;
+    }
+    this.renderLineItems(window.invoiceManager.currentInvoice);
+    this.renderTotals(window.invoiceManager.currentInvoice);
+  }
+
+  /**
+   * Remove line item
+   */
+  removeLineItem(index) {
+    const items = window.invoiceManager.currentInvoice.data.items || [];
+    items.splice(index, 1);
+    this.renderLineItems(window.invoiceManager.currentInvoice);
+    this.renderTotals(window.invoiceManager.currentInvoice);
+  }
+
+  /**
+   * Helper functions for line items
+   */
+  getDesc(index) {
+    return window.invoiceManager.currentInvoice.data.items[index].description;
+  }
+
+  getQty(index) {
+    return window.invoiceManager.currentInvoice.data.items[index].quantity;
+  }
+
+  getPrice(index) {
+    return window.invoiceManager.currentInvoice.data.items[index].price;
+  }
+
+  /**
+   * Save invoice data
+   */
+  async saveInvoiceData() {
+    try {
+      if (!window.invoiceManager || !window.invoiceManager.currentInvoice) {
+        alert('No invoice to save');
+        return;
+      }
+
+      const validation = window.invoiceManager.validate();
+      if (!validation.isValid) {
+        alert('Please fix the following errors:\n' + validation.errors.join('\n'));
+        return;
+      }
+
+      await window.invoiceManager.saveInvoice();
+      alert('Invoice saved successfully!');
+      window.Router.navigate('/invoices');
+    } catch (error) {
+      alert('Error saving invoice: ' + error.message);
+    }
+  }
+
+  /**
+   * Generate invoice PDF and download
+   */
+  async generateInvoicePdf(invoiceId) {
+    try {
+      if (invoiceId) {
+        await this.editInvoice(invoiceId);
+      }
+
+      if (!window.invoiceManager?.currentInvoice) {
+        alert('No invoice to generate');
+        return;
+      }
+
+      const filename = await window.invoiceManager.generatePdf();
+      alert(`PDF generated: ${filename}`);
+    } catch (error) {
+      alert('Error generating PDF: ' + error.message);
+    }
+  }
+
+  /**
+   * Generate and download (used from editor)
+   */
+  async generateInvoiceAndDownload() {
+    try {
+      if (!window.invoiceManager?.currentInvoice) {
+        alert('No invoice data');
+        return;
+      }
+
+      // Save first
+      await this.saveInvoiceData();
+
+      // Then generate
+      const filename = await window.invoiceManager.generatePdf();
+      console.log('PDF saved:', filename);
+    } catch (error) {
+      console.error('Error:', error);
+      // Continue with PDF generation even if save fails
+      try {
+        const filename = await window.invoiceManager.generatePdf();
+        console.log('PDF generated:', filename);
+      } catch (pdfError) {
+        alert('Error generating PDF: ' + pdfError.message);
+      }
+    }
+  }
+
+  /**
+   * Delete invoice
+   */
+  async deleteInvoice(invoiceId) {
+    if (!confirm('Are you sure you want to delete this invoice?')) {
+      return;
+    }
+
+    try {
+      await window.DB.deleteResponse(invoiceId);
+      alert('Invoice deleted');
+      this.renderInvoicesList();
+    } catch (error) {
+      alert('Error deleting invoice: ' + error.message);
+    }
+  }
+
+  /**
+   * Render edit invoice
+   */
+  async renderEditInvoice(params = {}) {
+    const invoiceId = params.id;
+    if (!invoiceId) {
+      window.Router.navigate('/invoices');
+      return;
+    }
+
+    await this.editInvoice(invoiceId);
   }
 }
 
